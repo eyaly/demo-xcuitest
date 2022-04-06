@@ -10,10 +10,17 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: CmdLine@2
+  displayName: 'Install sauceCtl'
+  inputs:
+    script: |
+      sudo sh -c 'curl -L https://saucelabs.github.io/saucectl/install | bash -s -- -b /usr/local/bin'
+      saucectl --version
+- task: CmdLine@2
+  displayName: 'run xcuitest test'
+  inputs:
+    script: |
+      saucectl run --config ./.sauce/runner-ex5.yml
+  env:
+    SAUCE_USERNAME: $(sauceUsername) #this will store the value from 'sauceUsername' into SAUCE_USERNAME
+    SAUCE_ACCESS_KEY: $(sauceKey)
